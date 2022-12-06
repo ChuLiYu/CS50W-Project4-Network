@@ -1,0 +1,14 @@
+post:
+  creator_id : fk
+  created_time
+  likes int default:0
+  context: text
+
+user:
+  username
+  password
+  email
+
+following:
+  follower: FK
+  followee: FK

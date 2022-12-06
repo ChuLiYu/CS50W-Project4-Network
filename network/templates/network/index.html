@@ -1,0 +1,33 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div>
+        <form method="post" action={% url 'new_post_path' %}>
+            {% csrf_token %}
+            {{new_post_form.as_p}}
+            <input type="submit" class="btn primary-btn">
+        </form>
+    </div>
+    {% for post in posts_likes %}
+    <div class="card" id="card_{{post.0.pk}}">
+        <a href={% url 'profile_path' post.0.creator %}>
+            <div id="post_creator">{{post.0.creator}}</div>
+        </a>
+        <div id="post_time">{{post.0.created_time}}</div>
+        <div id="post_context">{{post.0.context}}</div>
+        {% if post.1 %}
+        <div id="post_like">{{ post.1 }}</div>
+        {% else %}
+        <div id="post_like">0</div>
+        {% endif %}
+        <form method="POST" action={% url 'like_unlike_path' post.0.pk %}>
+            {% csrf_token %}
+            {{ like_unlike_form}}
+            <input type="submit">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
