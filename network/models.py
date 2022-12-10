@@ -7,7 +7,7 @@ class User(AbstractUser):
 
 
 class Post(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
     created_time = models.DateTimeField(auto_now=False, auto_now_add=True)
     context = models.TextField(max_length=200)
 
@@ -20,6 +20,9 @@ class Following(models.Model):
     followee = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="followee"
     )
+
+    class Meta:
+        unique_together = ("follower", "followee")
 
 
 class Like(models.Model):

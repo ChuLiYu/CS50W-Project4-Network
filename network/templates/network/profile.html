@@ -1,0 +1,39 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div>
+        <h1>{{user_name}}<h1>
+    </div>
+    <div>
+        <h3>Followed by: {{follower_number}} | Follow: {{followee_number}}</h3>
+        <form action={% url "follow_path" user_name%} method="post">
+            {% csrf_token %}
+            {{follow_form}}
+            {% comment %} TODO need to be togglable {% endcomment %}
+            <input type="submit" value="Follow">
+        </form>
+    </div>
+
+    {% for post in posts_likes %}
+    <div class="card" id="card_{{post.0.pk}}">
+        <a href={% url 'profile_path' post.0.creator %}>
+            <div id="post_creator">{{post.0.creator}}</div>
+        </a>
+        <div id="post_time">{{post.0.created_time}}</div>
+        <div id="post_context">{{post.0.context}}</div>
+        {% if post.1 %}
+        <div id="post_like">{{ post.1 }}</div>
+        {% else %}
+        <div id="post_like">0</div>
+        {% endif %}
+        <form method="POST" action={% url 'like_unlike_path' post.0.pk %}>
+            {% csrf_token %}
+            {{ like_unlike_form}}
+            <input type="submit">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
