@@ -1,12 +1,18 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import User, Post, Like, Following
 from .forms import EditPostForm, NewPostForm, LikeUnlikeForm, FollowForm
+
+from .service import toggle_like, count_likes
+
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -190,29 +196,15 @@ def edit_post_view(request, post_id):
 
 
 @login_required
-def like_unlike_view(request, post_id):
-    if request.method == "GET":
-        return
-    post = Post.objects.get(pk=post_id)
-    like = Like.objects.filter(post=post, creator=request.user)
+def like_view(request):
+    if request.method != "POST":
+        return redirect("index")
+    body = json.loads(request.body)  # Convert from byte to dict
+    like_author = body["like_author"]  # Author's name
+    liked_post = body["liked_post"]  # Post id
+    toggle_like(like_author, liked_post)
 
-    # Like and Unlike based on like sql is exist or not
-    if like:
-        form = LikeUnlikeForm(request.POST, instance=like.first())
-        if form.is_valid():
-            like.delete()
-    else:
-        form = LikeUnlikeForm(request.POST)
-        if form.is_valid():
-            temp_form = form.save(commit=False)
-            temp_form.creator = request.user
-            post = Post.objects.get(pk=post_id)
-            temp_form.post = post
-            temp_form.save()
-    return HttpResponseRedirect("/")
-
-
-
+    return JsonResponse({"likes": count_likes(liked_post)})
 
 
 # Show only sign in user for their following users' posts

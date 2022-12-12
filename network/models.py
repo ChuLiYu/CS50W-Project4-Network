@@ -27,10 +27,13 @@ class Following(models.Model):
 
 class Like(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="liked by")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
 
     def __str__(self):
         return f"{self.creator} likes post {self.post.id}"
+
+    class Meta:
+        unique_together = ("creator", "post")
 
 
 # class Comment(models.Model):

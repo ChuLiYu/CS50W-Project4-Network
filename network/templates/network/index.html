@@ -1,5 +1,6 @@
 {% extends "network/layout.html" %}
 
+{%load static%}
 {% block body %}
 <div class="container">
     <div class="row py-1">
@@ -11,7 +12,7 @@
     </div>
     {% for post in posts_likes %}
     <div class="row py-1">
-        <div class="card col" id="card_{{post.0.pk}}">
+        <div class="card col" id="card_{{post.0.pk}}" data-post_id="{{post.0.pk}}">
             <a href={% url 'profile_path' post.0.creator %}>
                 <div id="post_creator">{{post.0.creator}}</div>
             </a>
@@ -23,18 +24,9 @@
                 {{ edit_post_form.as_p}}
                 <input type="submit" value="Save">
             </form>
-            {% if post.1 %}
-            <div id="post_like">{{ post.1 }}</div>
-            {% else %}
-            <div id="post_like">0</div>
-            {% endif %}
 
+            <i class="fa fa-heart text-muted like-link">0</i>
 
-            <form method="POST" action={% url 'like_unlike_path' post.0.pk %}>
-                {% csrf_token %}
-                {{ like_unlike_form}}
-                <input type="submit" value="Like">
-            </form>
 
 
         </div>

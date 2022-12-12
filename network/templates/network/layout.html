@@ -7,7 +7,10 @@
     <title>{% block title %}Social Network{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+        integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">
     <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+
 </head>
 
 <body>
@@ -19,7 +22,8 @@
             <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><strong>Sign in as {{ user.username }}</strong></a>
+                    Sign in as
+                    <a class="nav-link" href="#"><strong id="username">{{ user.username }}</strong></a>
                 </li>
                 {% endif %}
 
@@ -51,5 +55,8 @@
         {% endblock %}
     </div>
 </body>
+{% block script%}
+<script src="{%static 'network/index.js'%}"></script>
+{%endblock%}
 
 </html>
