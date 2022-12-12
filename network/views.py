@@ -3,21 +3,19 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import User, Post, Like, Following
-from .forms import EditPostForm, NewPostForm, LikeUnlikeForm, FollowForm
+from .forms import EditPostForm, NewPostForm, FollowForm
 
 from .service import toggle_like, count_likes
-
-from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
     new_post_form = NewPostForm()
-    like_unlike_form = LikeUnlikeForm()
+
     edit_post_form = EditPostForm()
 
     if request.method == "POST":
@@ -43,7 +41,6 @@ def index(request):
     context = {
         "posts_likes": posts_likes,
         "new_post_form": new_post_form,
-        "like_unlike_form": like_unlike_form,
         "edit_post_form": edit_post_form,
     }
 
