@@ -1,66 +1,41 @@
 {% extends "network/layout.html" %}
 
+{%load static%}
 {% block body %}
+{% if user.is_authenticated %}
 <div class="container">
     <div class="row py-1">
-        <form class="card col" method="post" action={% url 'new_post_path' %}>
+        <form class="card col m-1" method="POST" action={% url 'new_post_path' %}>
             {% csrf_token %}
-            {{new_post_form.as_p}}
-            <input type="submit" class="btn btn-primary">
+            {{form.as_table}}
+            <input type="submit" class="btn btn-primary" value="Post it">
         </form>
     </div>
     {% for post in posts_likes %}
     <div class="row py-1">
-        <div class="card col" id="card_{{post.0.pk}}">
+        <div class="card col" id="card_{{post.0.pk}}" data-post_id="{{post.0.pk}}">
             <a href={% url 'profile_path' post.0.creator %}>
                 <div id="post_creator">{{post.0.creator}}</div>
             </a>
             <div id="post_time">{{post.0.created_time}}</div>
             <div id="post_context">{{post.0.context}}</div>
             <input type="button" class="btn btn-primary" value="Edit">
+
+            <!-- Edit post-->
             <form method="POST" action={% url 'edit_post_path' post.0.pk %}>
                 {% csrf_token %}
                 {{ edit_post_form.as_p}}
-                <input type="submit" value="Save">
+                <input type="submit" value="Save Change">
             </form>
-            {% if post.1 %}
-            <div id="post_like">{{ post.1 }}</div>
-            {% else %}
-            <div id="post_like">0</div>
-            {% endif %}
-
-
-            <form method="POST" action={% url 'like_unlike_path' post.0.pk %}>
-                {% csrf_token %}
-                {{ like_unlike_form}}
-                <input type="submit" value="Like">
-            </form>
-
-
         </div>
     </div>
     {% endfor %}
-
-    <nav aria-label="Page navigation" id="page_navigation">
-        <ul class="pagination pagination-lg justify-content-center">
-
-            {% if posts_likes.has_previous %}
-
-            <li class="page-item">
-                <a class="page-link" href="?page={{ posts_likes.previous_page_number }}">Previous</a></li>
-            {%else%}
-            <li class="page-item disable "><a class="page-link" tabindex="-1" aria-disabled="true">Previous</a></li>
-            {% endif %}
-            <li class="page-item page-link">
-                {{posts_likes.number}} / {{ posts_likes.paginator.num_pages }}
-            </li>
-            {% if posts_likes.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ posts_likes.next_page_number }}">Next</a></li>
-            {%else%}
-            <li class="page-item disable"><a class="page-link" tabindex="-1" aria-disabled="true">Next</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endblock %}
 </div>
+{% endif %}
+
+<!-- Render posts. -->
+
+{% include 'network/post_list.html' %}
+
+
+{% endblock %}

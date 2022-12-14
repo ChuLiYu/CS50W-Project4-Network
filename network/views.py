@@ -1,47 +1,31 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import User, Post, Like, Following
-from .forms import EditPostForm, NewPostForm, LikeUnlikeForm, FollowForm
+from .forms import EditPostForm, NewPostForm, FollowForm
+from django.views.generic.list import ListView
+
+from .service import toggle_like, count_likes, get_following_posts
 
 
-def index(request):
-    new_post_form = NewPostForm()
-    like_unlike_form = LikeUnlikeForm()
-    edit_post_form = EditPostForm()
+class AllPostsView(ListView):
+    """Index page view"""
 
-    if request.method == "POST":
-        return HttpResponseRedirect("/")
+    template_name = "network/index.html"
+    context_object_name = "posts"
+    model = Post
+    paginate_by = 10
+    ordering = ["-created_time"]
 
-    posts = Post.objects.all().order_by("-created_time")
-    posts_likes = []
-    for post in posts:
-        likes = Like.objects.filter(post=post.pk).count()
-        posts_likes.append([post, likes])
-
-    # pagenate
-    limit = 10
-    paginator = Paginator(posts_likes, limit)
-    page = request.GET.get("page")
-    try:
-        posts_likes = paginator.page(page)
-    except PageNotAnInteger:
-        posts_likes = paginator.page(1)
-    except EmptyPage:
-        posts_likes = paginator.page(paginator.num_pages)
-
-    context = {
-        "posts_likes": posts_likes,
-        "new_post_form": new_post_form,
-        "like_unlike_form": like_unlike_form,
-        "edit_post_form": edit_post_form,
-    }
-
-    return render(request, "network/index.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = NewPostForm()
+        return context
 
 
 def login_view(request):
@@ -102,20 +86,14 @@ def new_post_view(request):
     if request.method == "POST":
         form = NewPostForm(request.POST)
         if form.is_valid():
-            print("in valid")
             revised_form = form.save(commit=False)
             revised_form.creator = request.user
 
             revised_form.save()
-            return HttpResponseRedirect("/")
-    else:
-        pass
-    context = {"new_post_form": NewPostForm()}
-    return render(request, "network/new.html", context)
+    return HttpResponseRedirect("/")
 
 
 def profile_view(request, user_name):
-    like_unlike_form = LikeUnlikeForm()
     follow_form = FollowForm()
     # For (un)like and follow
     if request.method == "POST":
@@ -137,7 +115,6 @@ def profile_view(request, user_name):
     print(f"Follower number: {follower_number}, Followee number: {followee_number}")
     context = {
         "posts_likes": posts_likes,
-        "like_unlike_form": like_unlike_form,
         "follow_form": follow_form,
         "user_name": user_name,
         "follower_number": follower_number,
@@ -185,74 +162,31 @@ def edit_post_view(request, post_id):
     if not post:
         return HttpResponseRedirect("/")
     # save new context to db
-    post.update(context=request.POST.get("context"))
+    post.update(context=request.POST.get("text-content"))
     return HttpResponseRedirect("/")
 
 
 @login_required
-def like_unlike_view(request, post_id):
-    if request.method == "GET":
-        return
-    post = Post.objects.get(pk=post_id)
-    like = Like.objects.filter(post=post, creator=request.user)
+def like_view(request):
+    if request.method != "POST":
+        return redirect("index")
+    body = json.loads(request.body)  # Convert from byte to dict
+    like_author = body["like_author"]  # Author's name
+    liked_post = body["liked_post"]  # Post id
+    toggle_like(like_author, liked_post)
 
-    # Like and Unlike based on like sql is exist or not
-    if like:
-        form = LikeUnlikeForm(request.POST, instance=like.first())
-        if form.is_valid():
-            like.delete()
-    else:
-        form = LikeUnlikeForm(request.POST)
-        if form.is_valid():
-            temp_form = form.save(commit=False)
-            temp_form.creator = request.user
-            post = Post.objects.get(pk=post_id)
-            temp_form.post = post
-            temp_form.save()
-    return HttpResponseRedirect("/")
-
-
-
+    return JsonResponse({"likes": count_likes(liked_post)})
 
 
 # Show only sign in user for their following users' posts
 @login_required
 def following_view(request):
-    new_post_form = NewPostForm()
-    like_unlike_form = LikeUnlikeForm()
+    if request.user.is_authenticated:
+        f_posts = get_following_posts(user=request.user).order_by("-created_time")
+        print(f_posts)
 
-    if request.method == "POST":
-        return HttpResponseRedirect("/")
-
-    # For filter out followed user's post
-    user = User.objects.get(username=request.user)
-    followees = (
-        Following.objects.filter(follower=user)
-        .values_list("followee", flat=True)  # get followee col
-        .distinct()
-    )
-    posts = Post.objects.filter(creator__in=followees).order_by("-created_time")
-
-    posts_likes = []
-    for post in posts:
-        likes = Like.objects.filter(post=post.pk).count()
-        posts_likes.append([post, likes])
-
-    # Pagination
-    limit = 10
-    paginator = Paginator(posts_likes, limit)
-    page = request.GET.get("page")
-    try:
-        posts_likes = paginator.page(page)
-    except PageNotAnInteger:
-        posts_likes = paginator.page(1)
-    except EmptyPage:
-        posts_likes = paginator.page(paginator.num_pages)
-
-    context = {
-        "posts_likes": posts_likes,
-        "new_post_form": new_post_form,
-        "like_unlike_form": like_unlike_form,
-    }
-
-    return render(request, "network/index.html", context)
+        context = {
+            "f_posts": f_posts,
+        }
+        return render(request, "network/following.html", context)
+    return redirect("index")
