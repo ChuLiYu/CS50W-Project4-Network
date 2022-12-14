@@ -21,3 +21,9 @@ pip install -r requirements.txt
 python manage.py runserver
 
 4.Go to you local host and port(noramlly at 8000) to see the page.
+
+## Function Intro
+### Login Fucntion
+![login_3](https://user-images.githubusercontent.com/32170898/207532859-a4d668f8-54a3-4585-889a-fe4df0ca5674.gif)
+
+### 
