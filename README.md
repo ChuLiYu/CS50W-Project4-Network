@@ -1,10 +1,9 @@
 # CS50W-Project4-Network
 ## Build a twitter like social network site by Django.
 
-## Get started
-
 🎥[Demo Video](https://youtu.be/ajK_um270kk)🎥
 
+## Get started
 
 1.Clone this repo
 `
