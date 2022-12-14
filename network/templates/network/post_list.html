@@ -1,0 +1,42 @@
+{% for post in posts %}
+<div class="card mb-3">
+  <div class="card-body " data-post_id="{{ post.id }}">
+    <h5 class="card-title"><a href="{% url 'profile_path' post.creator %}">{{ post.creator }}</a></h5>
+    <div class="card-text" name="text-content">{{ post.context }}</div>
+    <form class="d-none  edit_form" action={% url 'edit_post_path' post.id %} name="edit_form" method='POST'>
+      {% csrf_token %}
+      <input class="col" type="text" name="text-content">
+      <input class="" type="submit" value="Save">
+    </form>
+
+    <h6 class="card-subtitle text-muted m-auto">{{ post.created_time }}</h6>
+
+    <!-- Likes. -->
+    <i class="fas fa-heart  like-link" >{{ post.likes.all.count }}</i>
+
+    {% if post.creator == user %}
+    <input class="edit-post-link" type="button" value="Edit"></input>
+
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+<nav aria-label="Page navigation" id="page_navigation">
+  <ul class="pagination pagination-lg justify-content-center">
+    <li class="step-links page-item">
+      {% if page_obj.has_previous %}
+      <a href="?page=1">&laquo; first</a>
+      <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+
+    <li class="current page-item">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </li>
+    </li class="page-item">
+    {%if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+    </li>
+  </ul>
+</nav>

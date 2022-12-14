@@ -11,7 +11,7 @@
             {% csrf_token %}
             {{follow_form}}
             {% comment %} TODO need to be togglable {% endcomment %}
-            <input type="submit" value="Follow">
+            <input type="submit" value="Follow" class="follow-link">
         </form>
     </div>
 
@@ -27,11 +27,7 @@
         {% else %}
         <div id="post_like">0</div>
         {% endif %}
-        <form method="POST" action={% url 'like_unlike_path' post.0.pk %}>
-            {% csrf_token %}
-            {{ like_unlike_form}}
-            <input type="submit">
-        </form>
+
     </div>
     {% endfor %}
 </div>

@@ -17,3 +17,11 @@ def toggle_like(like_author: str, liked_post: int) -> Optional[Like]:
 def count_likes(post_id: int) -> int:
     post = Post.objects.get(pk=post_id)
     return post.likes.all().count()
+
+
+def get_following_posts(user):
+
+    f_users = User.objects.filter(followee__follower=user)
+    f_posts = Post.objects.filter(creator__in=f_users)
+
+    return f_posts

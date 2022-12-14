@@ -1,0 +1,17 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+{% for post in f_posts %}
+<div class="card mb-3">
+  <!-- data-{key}, a way to pass value to js by dataset.{key} -->
+  <div class="card-body" data-post_id="{{post.id}}">
+    <h5 class="card-title"><a href="{% url 'profile_path' user_name=post.creator %}">{{ post.creator }}</a></h5>
+    <div class="card-text">{{ post.context }}</div>
+    <div class="card-subtitle text-muted">{{ post.created_time }}</div>
+
+    <!-- Likes -->
+    <i class="fas fa-heart  like-link">{{ post.likes.all.count }}</i>
+  </div>
+</div>
+{% endfor %}
+{% endblock body %}

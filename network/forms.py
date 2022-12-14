@@ -7,6 +7,11 @@ class NewPostForm(forms.ModelForm):
         model = Post
         exclude = ["creator", "like"]
         labels = {"context": ""}
+        widgets = {
+            "context": forms.Textarea(
+                attrs={"placeholder": "What are you thining now?"}
+            )
+        }
 
 
 class LikeUnlikeForm(forms.ModelForm):
