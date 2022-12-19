@@ -22,11 +22,7 @@ python manage.py runserver
 4.Go to you local host and port(noramlly at 8000) to see the page.
 
 ## Function Intro
-#### Login Page: with validation
-![login_3](https://user-images.githubusercontent.com/32170898/207532859-a4d668f8-54a3-4585-889a-fe4df0ca5674.gif)
 
-#### Register Page: Can Register a new account and automatically log in
-![Register_1](https://user-images.githubusercontent.com/32170898/207533407-1d41d1a1-2767-404c-b5f0-4569547ef0fa.gif)
 
 #### All posts: can see all the posts on the website, and can make a new post for you own.
 ![All_posts_views_1](https://user-images.githubusercontent.com/32170898/207533576-4e315ce4-726f-491a-b4b1-8b0f88640c41.gif)
@@ -44,4 +40,8 @@ python manage.py runserver
 #### Log Out: When you log out, you can not follow others and like their posts.
 ![Login_valid_for_like_and_following_1](https://user-images.githubusercontent.com/32170898/207534373-f8bb543a-fbb6-488f-974a-1e9a62ddffdb.gif)
 
+#### Login Page: with validation
+![login_3](https://user-images.githubusercontent.com/32170898/207532859-a4d668f8-54a3-4585-889a-fe4df0ca5674.gif)
 
+#### Register Page: Can Register a new account and automatically log in
+![Register_1](https://user-images.githubusercontent.com/32170898/207533407-1d41d1a1-2767-404c-b5f0-4569547ef0fa.gif)
