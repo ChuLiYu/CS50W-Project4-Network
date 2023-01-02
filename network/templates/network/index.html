@@ -2,40 +2,17 @@
 
 {%load static%}
 {% block body %}
-{% if user.is_authenticated %}
 <div class="container">
-    <div class="row py-1">
-        <form class="card col m-1" method="POST" action={% url 'new_post_path' %}>
+    {% if user.is_authenticated %}
+    <div class="row px-3 py-2">
+        <form class="card" method="POST" action={% url 'new_post_path' %} id="post__form">
             {% csrf_token %}
             {{form.as_table}}
             <input type="submit" class="btn btn-primary" value="Post it">
         </form>
     </div>
-    {% for post in posts_likes %}
-    <div class="row py-1">
-        <div class="card col" id="card_{{post.0.pk}}" data-post_id="{{post.0.pk}}">
-            <a href={% url 'profile_path' post.0.creator %}>
-                <div id="post_creator">{{post.0.creator}}</div>
-            </a>
-            <div id="post_time">{{post.0.created_time}}</div>
-            <div id="post_context">{{post.0.context}}</div>
-            <input type="button" class="btn btn-primary" value="Edit">
+    {% endif %}
 
-            <!-- Edit post-->
-            <form method="POST" action={% url 'edit_post_path' post.0.pk %}>
-                {% csrf_token %}
-                {{ edit_post_form.as_p}}
-                <input type="submit" value="Save Change">
-            </form>
-        </div>
-    </div>
-    {% endfor %}
+    {% include 'network/post_list.html' %}
+    {% endblock %}
 </div>
-{% endif %}
-
-<!-- Render posts. -->
-
-{% include 'network/post_list.html' %}
-
-
-{% endblock %}
