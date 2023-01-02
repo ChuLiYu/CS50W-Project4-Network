@@ -2,17 +2,16 @@
 
 {%load static%}
 {% block body %}
+{% if user.is_authenticated %}
 <div class="container">
-    {% if user.is_authenticated %}
-    <div class="row px-3 py-2">
-        <form class="card" method="POST" action={% url 'new_post_path' %} id="post__form">
+    <div class="row">
+        <form class="card m-2 p-2 px-4" method="POST" action={% url 'new_post_path' %}>
             {% csrf_token %}
             {{form.as_table}}
             <input type="submit" class="btn btn-primary" value="Post it">
         </form>
+        {% endif %}
+        {% include 'network/post_list.html' %}
     </div>
-    {% endif %}
-
-    {% include 'network/post_list.html' %}
-    {% endblock %}
 </div>
+{% endblock %}

@@ -2,10 +2,12 @@
 
 {% block body %}
 <div class="container">
-    <div>
-        <h1>{{user_name}}<h1>
-    </div>
-    <div>
+    <div class="row m-1">
+        <p class="h1">
+            <i class="fas fa-user fa-xs">
+            </i>
+            {{user_name}}</p>
+
         <h3>Followed by: {{follower_number}} | Follow: {{followee_number}}</h3>
         <form action={% url "follow_path" user_name%} method="post">
             {% csrf_token %}
@@ -14,22 +16,26 @@
             <input type="submit" value="Follow" class="follow-link">
         </form>
     </div>
+    <div class="row m-1 gy-1">
+        {% for post in posts_likes %}
+        <div class="card p-2" id="card_{{post.0.pk}}">
+            <a href={% url 'profile_path' post.0.creator %}>
+                <div id="post_creator">{{post.0.creator}}</div>
+            </a>
+            <div id="post_time">{{post.0.created_time}}</div>
+            <div id="post_context">{{post.0.context}}</div>
+            {% if post.1 %}
+            <div id="post_like">
+                <i class="fas fa-heart  like-link">{{ post.likes.all.count }}</i>
+                {{ post.1 }}</div>
+            {% else %}
+            <div id="post_like">
+                <i class="fas fa-heart  like-link">{{ post.likes.all.count }}</i>
+                0</div>
+            {% endif %}
 
-    {% for post in posts_likes %}
-    <div class="card" id="card_{{post.0.pk}}">
-        <a href={% url 'profile_path' post.0.creator %}>
-            <div id="post_creator">{{post.0.creator}}</div>
-        </a>
-        <div id="post_time">{{post.0.created_time}}</div>
-        <div id="post_context">{{post.0.context}}</div>
-        {% if post.1 %}
-        <div id="post_like">{{ post.1 }}</div>
-        {% else %}
-        <div id="post_like">0</div>
-        {% endif %}
-
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
-
 {% endblock %}
