@@ -25,8 +25,7 @@ class UserTestCase(TestCase):
         p = Post.objects.filter(creator=u)
         self.assertEqual(p.count(), 4)
 
-
-# Client Testing
+    # Client Testing
     def test_index(self):
         # Set up client to make requests
         c = Client()
@@ -36,3 +35,8 @@ class UserTestCase(TestCase):
 
         # Make sure status code is 200
         self.assertEqual(response.status_code, 200)
+
+    def test_following(self):
+        c = Client()
+        response = c.get("/following/")
+        self.assertEqual(response.status_code, 404)
